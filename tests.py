@@ -6,11 +6,14 @@ from main import BooksCollector
 
 class TestBooksCollector:
 
+    @pytest.mark.parametrize('book_names', ['Г','Что делать, если ваш кот хочет вас убить'])
+    def test_add_new_book_add_two_books(self, collector, book_names):
+        collector.add_new_book(book_names)
+        assert len(collector.get_books_rating()) == 2
 
     @pytest.mark.parametrize('book_names', ['', 'Название_книги_на_сорок_один_символ_отриц',
                                             'Название_книги_на_сорок_два_символаа_отриц'])
     def test_add_new_book_add_negative_book(self, collector, book_names):
-        collector = BooksCollector()
         collector.add_new_book(book_names)
         assert len(collector.get_books_genre()) == 0
 
@@ -26,9 +29,27 @@ class TestBooksCollector:
         collector.set_book_genre('Шерлок Холм', 'Жанр_которого_нет')
         assert collector.books_genre.get('Шерлок Холм') == ''
 
+    def test_get_book_genre(collector):
+        collector = BooksCollector()
+        collector.add_new_book('Алёнушка из грибов')
+        collector.set_book_genre('Алёнушка из грибов', 'Фантастика')
+        assert collector.get_book_genre('Алёнушка из грибов') == 'Фантастика'
+
+    def test_get_books_genre(collector):
+        collector = BooksCollector()
+        collector.add_new_book('Алёнушка из грибов')
+        collector.set_book_genre('Алёнушка из грибов', 'Фантастика')
+        assert collector.get_books_genre() == {'Алёнушка из грибов': 'Фантастика'}
+
+    def test_get_list_of_favorites_books(collector):
+        collector = BooksCollector()
+        collector.add_new_book('Алёнушка из грибов')
+        collector.add_book_in_favorites('Алёнушка из грибов')
+        assert collector.get_list_of_favorites_books() == ['Алёнушка из грибов']
+
     def test_get_book_genre_for_name_positive_result(self, collector):
         collector = BooksCollector()
-        collector.add_new_book('Шерлок Холм')
+        collector.add_new_book('Шерлок Хол.м')
         collector.set_book_genre('Шерлок Холм', 'Детективы')
         assert collector.get_book_genre('Шерлок Холм') == 'Детективы'
 
@@ -63,3 +84,5 @@ class TestBooksCollector:
         collector.add_book_in_favorites('Шерлок Холм')
         collector.delete_book_from_favorites('Шерлок Холм')
         assert len(collector.favorites) == 0
+
+
